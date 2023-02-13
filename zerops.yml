@@ -1,0 +1,34 @@
+# Service hostname to which the application will be deployed.
+nodejs0:
+  # The part used for the build phase to produce a final application runtime.
+  build:
+    # Which technology should be used as a base one for creating a build container.
+    base: [nodejs@16]
+    # Which commands should be run to install additional or custom dependencies.
+    
+      # - apt-get install -y libnss3 libnssutil3 libsmime3 libnspr4 libatk-1.0 libatk-bridge-2.0 libcups libdrm libxkbcommon libXcomposite libXdamage libXfixes libXrandr libgbm libpango libcairo libasound libatspi
+   
+    # Which commands should be run to build the application.
+    build:
+      - npm i
+    # Which files or directories of the application build should be stored for the next build.
+    cache: [node_modules]
+    # Which files and directories should be copied from a build container into a runtime container.
+    deploy: [.]
+  # The part used to run the application runtime after a successful deployment.
+  run:
+    prepare:
+      - add-apt-repository ppa:savoury1/ffmpeg4
+      - add-apt-repository ppa:savoury1/chromium
+      - apt-get update
+      - apt-get clean
+      - apt-get install -y chromium-browser
+      - apt-get install -y libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
+      - apt-get install -y gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget
+      
+    # Which commands to run after a launch or each restart of a runtime container instance.
+    init:
+        - node app.js
+    # Replacement of template patterns in static files with environment variable values.
+    # A command that should start your service.
+    start: node app.js
